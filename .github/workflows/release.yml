@@ -1,0 +1,20 @@
+# When a version tag (v1.2.3) is pushed, builds the addon zip, attaches it to a GitHub release and
+# uploads it to CurseForge (the project named by X-Curse-Project-ID in the .toc file).
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: BigWigsMods/packager@v2
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
