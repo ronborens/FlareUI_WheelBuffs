@@ -12,12 +12,12 @@ Rebuff without thinking about it. While one of FlareUI's Buff Reminders shows a 
 The options appear inside FlareUI's own settings window. You can also type `/flarewheel`, or open the game's Options > AddOns.
 
 - Cast on Mouse Wheel: on or off
-- Only Buffs on Myself: the wheel never casts on someone else in your group
+- Only Buffs on Myself (on by default): the wheel never casts on someone else in your group
 
 ## Good to know
 
 - It follows FlareUI's Buff Reminders, so set up there which buffs you want reminders for.
-- A scroll can cast a group buff on another player when their buff is the one missing. Switch on Only Buffs on Myself if you do not want that.
+- Out of the box a scroll only ever buffs you. Switch off Only Buffs on Myself if you want it to buff your group as well.
 
 ## Requirements
 

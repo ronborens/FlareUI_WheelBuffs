@@ -16,7 +16,7 @@ local _, ns = ...
 local Wheel = { KEYS = { MOUSEWHEELUP = "CAMERAZOOMIN", MOUSEWHEELDOWN = "CAMERAZOOMOUT" } }
 ns.Wheel = Wheel
 
-local DEFAULTS = { enabled = true, selfOnly = false }
+local DEFAULTS = { enabled = true, selfOnly = true }
 
 local function Reminders()
     local F = _G.FlareUI
@@ -116,7 +116,7 @@ ns.OnReady("FlareUI_WheelBuffsDB", DEFAULTS, function()
           tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Out of combat only. Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },
         { key = "selfOnly", label = "Only Buffs on Myself",
           flare = { key = "br.extWheelSelfOnly", section = "br.alertsSection", tab = "alerts" },
-          tip = "The wheel never casts a buff that is missing on someone else in your group, only on you." },
+          tip = "The wheel never casts a buff that is missing on someone else in your group, only on you. Switch this off to let a scroll buff your group too." },
     }, "/flarewheel", function() if started then Recheck() end end)
 end, function()
     started = true
