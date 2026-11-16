@@ -6,7 +6,8 @@ local _, ns = ...
 -- wheel did. The game only casts from a key or a click, so the wheel's zoom keys are bound, for that
 -- while, to a hidden secure button holding the spell (an override binding: the player's own bindings
 -- are untouched and back the moment it is cleared); the button's PostClick does the zoom.
--- Only wheel keys bound to the camera's zoom are taken. Only a reminder that casts a plain spell: no
+-- Only on foot and in your own shape: never mounted, and never in a druid's form or Ghost Wolf, which a
+-- cast would end. Only wheel keys bound to the camera's zoom are taken. Only a reminder that casts a plain spell: no
 -- item is used and no macro run by a scroll. With nothing to cast the binding is cleared, so the
 -- wheel is the game's own again. Bindings and a secure button's spell can't change in a fight, and
 -- buffs can't be read there: the binding is cleared as one begins.
@@ -67,6 +68,18 @@ function Wheel.Clear()
     ClearOverrideBindings(Wheel.button)
 end
 
+-- Mounted, or in another shape (a druid's forms, a shaman's Ghost Wolf): a cast would dismount you or
+-- drop the form, so the wheel is left alone until you are on foot in your own shape again
+local shifter   -- this class changes shape
+function Wheel.Busy()
+    if IsMounted() then return true end
+    if shifter == nil then
+        local _, class = UnitClass("player")
+        if class then shifter = class == "DRUID" or class == "SHAMAN" end
+    end
+    return shifter and (GetShapeshiftForm() or 0) > 0 or false
+end
+
 -- list: the reminders showing now
 function Wheel.Set(list)
     if InCombatLockdown() then return end
@@ -74,7 +87,18 @@ function Wheel.Set(list)
     if ns.db and ns.db.enabled and type(list) == "table" and not EditPreviewing() then
         castID, unit = Wheel.Pick(list)
     end
-    if not castID then
+    Wheel.wanted, Wheel.wantedUnit = castID, unit   -- (kept for Wheel.Again)
+    Wheel.Bind(castID, unit)
+end
+
+-- You mounted, dismounted or changed shape: the same reminder, bound or let go as it now stands
+function Wheel.Again()
+    if InCombatLockdown() then return end
+    Wheel.Bind(Wheel.wanted, Wheel.wantedUnit)
+end
+
+function Wheel.Bind(castID, unit)
+    if not castID or Wheel.Busy() then
         Wheel.Clear()
         return
     end
@@ -97,7 +121,11 @@ end
 -- a fight begins (this comes just before the lockdown): the wheel is the game's own in it
 Wheel.events = CreateFrame("Frame")
 Wheel.events:RegisterEvent("PLAYER_REGEN_DISABLED")
-Wheel.events:SetScript("OnEvent", Wheel.Clear)
+Wheel.events:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+Wheel.events:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+Wheel.events:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then Wheel.Clear() else Wheel.Again() end
+end)
 
 -- FlareUI checks the reminders again (the list comes back through the hook below)
 local function Recheck()
@@ -113,7 +141,7 @@ ns.OnReady("FlareUI_WheelBuffsDB", DEFAULTS, function()
     ns.RegisterOptions("FlareUI: Cast Missing Buffs on Mouse Wheel", {
         { key = "enabled", label = "Cast on Mouse Wheel",
           flare = { key = "br.extCastOnWheel", section = "br.alertsSection", tab = "alerts" },
-          tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Out of combat only. Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },
+          tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Only out of combat, unmounted and in your normal form (it never takes you out of Ghost Wolf or a druid form). Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },
         { key = "selfOnly", label = "Only Buffs on Myself",
           flare = { key = "br.extWheelSelfOnly", section = "br.alertsSection", tab = "alerts" },
           tip = "The wheel never casts a buff that is missing on someone else in your group, only on you. Switch this off to let a scroll buff your group too." },

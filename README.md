@@ -25,6 +25,8 @@ Since most players scroll the wheel constantly while moving around, missing buff
 ## Built to be safe
 
 - **Out of combat only.** In a fight your mouse wheel is left completely alone.
+- **Never while mounted.** A scroll will not dismount you.
+- **Never in another form.** It will not take you out of Ghost Wolf or a druid form; the buff waits until you are back in your normal form.
 - **Only buffs you by default.** "Only Buffs on Myself" is switched on from the start, so a scroll never casts on another player unless you choose that.
 - **Spells only.** It never uses an item and never runs a macro.
 - **Only wheel keys bound to camera zoom are used.** If you have bound the wheel to something else, that binding is not touched.
