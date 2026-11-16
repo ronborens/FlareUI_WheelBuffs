@@ -19,6 +19,18 @@ The options appear inside FlareUI's own settings window. You can also type `/fla
 - It follows FlareUI's Buff Reminders, so set up there which buffs you want reminders for.
 - Out of the box a scroll only ever buffs you. Switch off Only Buffs on Myself if you want it to buff your group as well.
 
+## Install
+
+1. Download the latest zip from this project's [Releases](https://github.com/ronborens/FlareUI_WheelBuffs/releases).
+2. Extract it into your game's `Interface/AddOns` folder, so that `FlareUI_WheelBuffs` sits beside `FlareUI`.
+3. Restart the game.
+
+To run it straight from the source, clone this repository into `Interface/AddOns` as `FlareUI_WheelBuffs`.
+
+## Problems and ideas
+
+Please open an [issue](https://github.com/ronborens/FlareUI_WheelBuffs/issues) and say which FlareUI version you have.
+
 ## Requirements
 
 - [FlareUI](https://www.curseforge.com/wow/addons/flareui) must be installed and enabled.
