@@ -1,23 +1,46 @@
 # FlareUI: Cast Missing Buffs on Mouse Wheel
 
-Rebuff without thinking about it. While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it, and still zooms the camera as usual.
+An extension for the FlareUI interface that lets you rebuff without thinking about it: when a buff is missing, simply scrolling your mouse wheel casts it.
 
-- Out of combat only
-- Spells only: it never uses an item or runs a macro
-- Only takes wheel keys that are bound to camera zoom
-- With nothing missing, your mouse wheel is left exactly as it is
+## What it does
+
+FlareUI's Buff Reminders show an icon on screen when one of your buffs is missing, such as Power Word: Fortitude, Mark of the Wild, Arcane Intellect or Lightning Shield. In the base setup you then have to find the spell on your bars, or click the reminder icon, to cast it.
+
+With this addon, while a reminder is showing, the next scroll of your mouse wheel casts the missing buff for you. The camera still zooms as usual, so the wheel keeps doing its normal job at the same time.
+
+Since most players scroll the wheel constantly while moving around, missing buffs get recast almost without noticing.
+
+## Examples
+
+- **Priest:** your Power Word: Fortitude runs out while you are walking to the next quest. The reminder appears, you nudge the camera with the wheel as you always do, and Fortitude is back.
+- **Shaman:** Lightning Shield drops after a fight. Your next scroll puts it back up before the next pull.
+- **Druid, Mage, Paladin and others:** any buff you have set up in FlareUI's Buff Reminders works the same way.
+
+## How it changes your play
+
+- You stop running around without your buffs because you did not notice the reminder.
+- You no longer need a button on your bars, or a click on the reminder icon, for buffs you only cast every half hour.
+- Rebuffing between fights happens as part of normal movement instead of being a separate chore.
+
+## Built to be safe
+
+- **Out of combat only.** In a fight your mouse wheel is left completely alone.
+- **Only buffs you by default.** "Only Buffs on Myself" is switched on from the start, so a scroll never casts on another player unless you choose that.
+- **Spells only.** It never uses an item and never runs a macro.
+- **Only wheel keys bound to camera zoom are used.** If you have bound the wheel to something else, that binding is not touched.
+- **Nothing missing, nothing changed.** When no reminder is showing, your wheel behaves exactly as it does without the addon.
+- **Your key bindings are never edited.** The addon borrows the wheel only while a buff is missing and gives it back immediately.
 
 ## Options
 
-The options appear inside FlareUI's own settings window. You can also type `/flarewheel`, or open the game's Options > AddOns.
+The options appear inside FlareUI's own settings window, under Buff Reminders > Alerts. You can also type `/flarewheel`, or open the game's Options > AddOns.
 
-- Cast on Mouse Wheel: on or off
-- Only Buffs on Myself (on by default): the wheel never casts on someone else in your group
+- **Cast on Mouse Wheel:** on or off.
+- **Only Buffs on Myself (on by default):** the wheel never casts on someone else in your group. Switch it off to let a scroll buff your group too.
 
 ## Good to know
 
-- It follows FlareUI's Buff Reminders, so set up there which buffs you want reminders for.
-- Out of the box a scroll only ever buffs you. Switch off Only Buffs on Myself if you want it to buff your group as well.
+- It follows FlareUI's Buff Reminders, so choose there which buffs you want to be reminded about. Buffs you have not enabled there are never cast.
 
 ## Install
 
@@ -33,6 +56,6 @@ Please open an [issue](https://github.com/ronborens/FlareUI_WheelBuffs/issues) a
 
 ## Requirements
 
-- [FlareUI](https://www.curseforge.com/wow/addons/flareui) must be installed and enabled.
+- [FlareUI](https://www.curseforge.com/wow/addons/flareui) must be installed and enabled, with its Buff Reminders switched on.
 
 This is an unofficial extension. It is not made or endorsed by the FlareUI authors, so please report problems here and not to them. MIT licensed.
