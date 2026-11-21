@@ -68,11 +68,37 @@ function Wheel.Clear()
     ClearOverrideBindings(Wheel.button)
 end
 
--- Mounted, or in another shape (a druid's forms, a shaman's Ghost Wolf): a cast would dismount you or
--- drop the form, so the wheel is left alone until you are on foot in your own shape again
+-- Mounted, eating or drinking, or in another shape (a druid's forms, a shaman's Ghost Wolf): a cast
+-- would dismount you, stand you up or drop the form, so the wheel is left alone until you are on foot,
+-- done with your meal and in your own shape again
+-- Eating or drinking: the buff every food and drink puts on you while you sit, known by its name in
+-- the game's language ("Food", "Drink": spells 433 and 430) or by its icon. A cast would stand you up
+-- and waste the food.
+local MEAL_SPELLS = { 433, 430 }
+local MEAL_ICONS = { [134062] = true, [132794] = true }   -- the fork and knife, the water glass
+local mealNames
+function Wheel.Eating()
+    if not mealNames then
+        mealNames = {}
+        for _, id in ipairs(MEAL_SPELLS) do
+            local name = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(id)
+            if name then mealNames[name] = true end
+        end
+    end
+    for i = 1, 40 do
+        local ok, aura = pcall(C_UnitAuras.GetAuraDataByIndex, "player", i, "HELPFUL")
+        if not ok or not aura or (canaccessvalue and not canaccessvalue(aura)) then break end
+        local name, icon = aura.name, aura.icon
+        if canaccessvalue == nil or (canaccessvalue(name) and canaccessvalue(icon)) then
+            if (name and mealNames[name]) or (icon and MEAL_ICONS[icon]) then return true end
+        end
+    end
+    return false
+end
+
 local shifter   -- this class changes shape
 function Wheel.Busy()
-    if IsMounted() then return true end
+    if IsMounted() or Wheel.Eating() then return true end
     if shifter == nil then
         local _, class = UnitClass("player")
         if class then shifter = class == "DRUID" or class == "SHAMAN" end
@@ -123,8 +149,21 @@ Wheel.events = CreateFrame("Frame")
 Wheel.events:RegisterEvent("PLAYER_REGEN_DISABLED")
 Wheel.events:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 Wheel.events:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+Wheel.events:RegisterUnitEvent("UNIT_AURA", "player")
 Wheel.events:SetScript("OnEvent", function(_, event)
-    if event == "PLAYER_REGEN_DISABLED" then Wheel.Clear() else Wheel.Again() end
+    if event == "PLAYER_REGEN_DISABLED" then
+        Wheel.Clear()
+    elseif event == "UNIT_AURA" then
+        -- your buffs change all the time: only sitting down to a meal, or finishing one, matters
+        if InCombatLockdown() then return end
+        local eating = Wheel.Eating()
+        if eating ~= Wheel.eating then
+            Wheel.eating = eating
+            Wheel.Again()
+        end
+    else
+        Wheel.Again()
+    end
 end)
 
 -- FlareUI checks the reminders again (the list comes back through the hook below)
@@ -141,7 +180,7 @@ ns.OnReady("FlareUI_WheelBuffsDB", DEFAULTS, function()
     ns.RegisterOptions("FlareUI: Cast Missing Buffs on Mouse Wheel", {
         { key = "enabled", label = "Cast on Mouse Wheel",
           flare = { key = "br.extCastOnWheel", section = "br.alertsSection", tab = "alerts" },
-          tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Only out of combat, unmounted and in your normal form (it never takes you out of Ghost Wolf or a druid form). Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },
+          tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Only out of combat, unmounted, not eating or drinking, and in your normal form (it never takes you out of Ghost Wolf or a druid form). Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },
         { key = "selfOnly", label = "Only Buffs on Myself",
           flare = { key = "br.extWheelSelfOnly", section = "br.alertsSection", tab = "alerts" },
           tip = "The wheel never casts a buff that is missing on someone else in your group, only on you. Switch this off to let a scroll buff your group too." },

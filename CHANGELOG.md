@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- The wheel no longer casts while you are eating or drinking, so it never interrupts your meal.
+
 ## 1.0.2
 
 - No changes in game. Releases are now built and uploaded automatically.
