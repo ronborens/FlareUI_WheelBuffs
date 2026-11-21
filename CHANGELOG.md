@@ -2,6 +2,7 @@
 
 ## 1.0.3
 
+- New option, Only Above Mana: the wheel only casts while your mana is at or above the amount you choose.
 - The wheel no longer casts while you are eating or drinking, so it never interrupts your meal.
 - It also waits while you are bandaging, fishing, using your hearthstone, gathering, crafting or casting anything else, and while you are stealthed, feigning death or dead.
 

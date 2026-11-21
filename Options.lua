@@ -104,6 +104,17 @@ local function AddFlareRow(row, Set)
         }
         return
     end
+    if row.slider then
+        -- a slider over the choices (FlareUI's range row takes them as { value, label } pairs)
+        Copy.rows[where.key].choices = nil
+        S:Row{
+            key = where.key, kind = "range", choices = row.choices,
+            section = where.section, tab = where.tab, half = where.half,
+            get = function() return ns.db and ns.db[row.key] end,
+            set = function(value) Set(row.key, value) end,
+        }
+        return
+    end
     S:Row{
         key = where.key, kind = row.choices and "choice" or nil, choices = values,
         section = where.section, tab = where.tab, half = where.half,
@@ -117,7 +128,8 @@ local function AddFlareRow(row, Set)
 end
 
 -- rows: { key = "enabled", label = "...", tip = "...", choices = { { value, label }, ... }, flare = {...} }
--- (no choices: a checkbox; color = true: a colour, saved as { red, green, blue }). slash: "/name".
+-- (no choices: a checkbox; color = true: a colour, saved as { red, green, blue }; slider = true: the
+-- choices on a slider in FlareUI's window). slash: "/name".
 -- onChange(key, value): after a setting changed.
 function ns.RegisterOptions(title, rows, slash, onChange)
     ns.title = title
@@ -147,7 +159,8 @@ function ns.RegisterOptions(title, rows, slash, onChange)
                     SettingsPanel:GetLayout(made):AddInitializer(button)
                 end)
             elseif row.choices then
-                local setting = Settings.RegisterProxySetting(made, variable, Settings.VarType.String, row.label,
+                local kind = type(ns.defaults[row.key]) == "number" and Settings.VarType.Number or Settings.VarType.String
+                local setting = Settings.RegisterProxySetting(made, variable, kind, row.label,
                     ns.defaults[row.key], get, set)
                 Settings.CreateDropdown(made, setting, function()
                     local container = Settings.CreateControlTextContainer()
