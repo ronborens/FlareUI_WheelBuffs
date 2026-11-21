@@ -190,11 +190,15 @@ function ns.RegisterOptions(title, rows, slash, onChange)
             end
             print(("  %s = %s  (%s: %s)"):format(row.key, ValueText(row, ns.db[row.key]), row.label, values))
         end
+        -- (an addon's own commands: ns.slashHelp, handled by ns.OnSlash)
+        for _, line in ipairs(ns.slashHelp or {}) do print("  " .. line) end
     end
 
     local id = addonName:upper()
     _G["SLASH_" .. id .. "1"] = slash
     SlashCmdList[id] = function(text)
+        -- an addon's own commands first (ns.OnSlash returns true when it took the text)
+        if ns.OnSlash and ns.OnSlash(text or "") then return end
         local key, value = (text or ""):lower():match("^%s*(%S+)%s*(%S*)")
         if not key then
             if category and not InCombatLockdown() and pcall(Settings.OpenToCategory, category:GetID()) then return end
