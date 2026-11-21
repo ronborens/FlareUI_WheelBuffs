@@ -61,6 +61,7 @@ local function PickColor(row, Set)
 end
 
 local function ValueText(row, value)
+    if row.onClick then return "a button" end
     if row.color then
         local r, g, b = ColorOf(row.key)
         return ("%d, %d, %d"):format(r * 255 + 0.5, g * 255 + 0.5, b * 255 + 0.5)
@@ -95,12 +96,14 @@ local function AddFlareRow(row, Set)
     end
     Copy.rows[where.key] = { label = row.label, desc = row.tip, section = where.section, choices = labels,
                              tags = { "extension" } }
-    if row.color then
-        -- a button that opens the colour picker
+    if row.color or row.onClick then
+        -- a button: it opens the colour picker, or does what the row says
         S:Row{
             key = where.key, kind = "button", buttonText = row.buttonText or "Pick Colour",
             section = where.section, tab = where.tab, half = where.half,
-            apply = function() PickColor(row, Set) end,
+            apply = function()
+                if row.onClick then row.onClick() else PickColor(row, Set) end
+            end,
         }
         return
     end
@@ -129,7 +132,7 @@ end
 
 -- rows: { key = "enabled", label = "...", tip = "...", choices = { { value, label }, ... }, flare = {...} }
 -- (no choices: a checkbox; color = true: a colour, saved as { red, green, blue }; slider = true: the
--- choices on a slider in FlareUI's window). slash: "/name".
+-- choices on a slider in FlareUI's window; onClick = function: a button, nothing saved). slash: "/name".
 -- onChange(key, value): after a setting changed.
 function ns.RegisterOptions(title, rows, slash, onChange)
     ns.title = title
@@ -151,11 +154,13 @@ function ns.RegisterOptions(title, rows, slash, onChange)
             local variable = addonName .. "_" .. row.key
             local get = function() return ns.db[row.key] end
             local set = function(value) Set(row.key, value) end
-            if row.color then
-                -- (a button row; should the game not offer one, the slash command still picks)
+            if row.color or row.onClick then
+                -- (a button row; should the game not offer one, the slash command still works)
                 pcall(function()
                     local button = CreateSettingsButtonInitializer(row.label, row.buttonText or "Pick Colour",
-                        function() PickColor(row, Set) end, row.tip, true)
+                        function()
+                            if row.onClick then row.onClick() else PickColor(row, Set) end
+                        end, row.tip, true)
                     SettingsPanel:GetLayout(made):AddInitializer(button)
                 end)
             elseif row.choices then
@@ -181,7 +186,9 @@ function ns.RegisterOptions(title, rows, slash, onChange)
         ns.Print("options (" .. slash .. " <option> <value>):")
         for _, row in ipairs(rows) do
             local values = "on / off"
-            if row.color then
+            if row.onClick then
+                values = "opens its window"
+            elseif row.color then
                 values = "opens the colour picker, or: reset"
             elseif row.choices then
                 local list = {}
@@ -207,7 +214,10 @@ function ns.RegisterOptions(title, rows, slash, onChange)
         end
         for _, row in ipairs(rows) do
             if row.key:lower() == key then
-                if row.color then
+                if row.onClick then
+                    row.onClick()
+                    return
+                elseif row.color then
                     if value == "reset" then
                         local d = ns.defaults[row.key]
                         Set(row.key, { d[1], d[2], d[3] })
