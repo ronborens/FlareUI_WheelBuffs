@@ -16,7 +16,15 @@ function ns.InitDB(name, defaults)
         _G[name] = db
     end
     for key, value in pairs(defaults) do
-        if db[key] == nil then db[key] = value end
+        if db[key] == nil then
+            -- (a table is copied, so a change to the saved one never changes the default)
+            if type(value) == "table" then
+                local copy = {}
+                for k, v in pairs(value) do copy[k] = v end
+                value = copy
+            end
+            db[key] = value
+        end
     end
     ns.db, ns.defaults = db, defaults
     return db
@@ -26,7 +34,37 @@ function ns.Print(text)
     print("|cff00ccff" .. (ns.title or addonName) .. ":|r " .. text)
 end
 
+-- A colour row's value: { red, green, blue }, each 0 to 1
+local function ColorOf(key)
+    local c = ns.db and ns.db[key]
+    if not (type(c) == "table" and tonumber(c[1]) and tonumber(c[2]) and tonumber(c[3])) then c = ns.defaults[key] end
+    return c[1], c[2], c[3]
+end
+ns.ColorOf = ColorOf
+
+-- The game's own colour picker, for a colour row. Cancel puts the colour back.
+local function PickColor(row, Set)
+    local picker = _G.ColorPickerFrame
+    if not (picker and picker.SetupColorPickerAndShow) then
+        ns.Print("the game's colour picker is not available here.")
+        return
+    end
+    local r, g, b = ColorOf(row.key)
+    picker:SetupColorPickerAndShow({
+        r = r, g = g, b = b, hasOpacity = false,
+        swatchFunc = function()
+            local nr, ng, nb = picker:GetColorRGB()
+            Set(row.key, { nr, ng, nb })
+        end,
+        cancelFunc = function() Set(row.key, { r, g, b }) end,
+    })
+end
+
 local function ValueText(row, value)
+    if row.color then
+        local r, g, b = ColorOf(row.key)
+        return ("%d, %d, %d"):format(r * 255 + 0.5, g * 255 + 0.5, b * 255 + 0.5)
+    end
     if row.choices then
         for _, choice in ipairs(row.choices) do
             if choice[1] == value then return choice[2] end
@@ -57,6 +95,15 @@ local function AddFlareRow(row, Set)
     end
     Copy.rows[where.key] = { label = row.label, desc = row.tip, section = where.section, choices = labels,
                              tags = { "extension" } }
+    if row.color then
+        -- a button that opens the colour picker
+        S:Row{
+            key = where.key, kind = "button", buttonText = row.buttonText or "Pick Colour",
+            section = where.section, tab = where.tab, half = where.half,
+            apply = function() PickColor(row, Set) end,
+        }
+        return
+    end
     S:Row{
         key = where.key, kind = row.choices and "choice" or nil, choices = values,
         section = where.section, tab = where.tab, half = where.half,
@@ -70,7 +117,8 @@ local function AddFlareRow(row, Set)
 end
 
 -- rows: { key = "enabled", label = "...", tip = "...", choices = { { value, label }, ... }, flare = {...} }
--- (no choices: a checkbox). slash: "/name". onChange(key, value): after a setting changed.
+-- (no choices: a checkbox; color = true: a colour, saved as { red, green, blue }). slash: "/name".
+-- onChange(key, value): after a setting changed.
 function ns.RegisterOptions(title, rows, slash, onChange)
     ns.title = title
 
@@ -91,7 +139,14 @@ function ns.RegisterOptions(title, rows, slash, onChange)
             local variable = addonName .. "_" .. row.key
             local get = function() return ns.db[row.key] end
             local set = function(value) Set(row.key, value) end
-            if row.choices then
+            if row.color then
+                -- (a button row; should the game not offer one, the slash command still picks)
+                pcall(function()
+                    local button = CreateSettingsButtonInitializer(row.label, row.buttonText or "Pick Colour",
+                        function() PickColor(row, Set) end, row.tip, true)
+                    SettingsPanel:GetLayout(made):AddInitializer(button)
+                end)
+            elseif row.choices then
                 local setting = Settings.RegisterProxySetting(made, variable, Settings.VarType.String, row.label,
                     ns.defaults[row.key], get, set)
                 Settings.CreateDropdown(made, setting, function()
@@ -113,7 +168,9 @@ function ns.RegisterOptions(title, rows, slash, onChange)
         ns.Print("options (" .. slash .. " <option> <value>):")
         for _, row in ipairs(rows) do
             local values = "on / off"
-            if row.choices then
+            if row.color then
+                values = "opens the colour picker, or: reset"
+            elseif row.choices then
                 local list = {}
                 for _, choice in ipairs(row.choices) do list[#list + 1] = tostring(choice[1]) end
                 values = table.concat(list, " / ")
@@ -133,7 +190,16 @@ function ns.RegisterOptions(title, rows, slash, onChange)
         end
         for _, row in ipairs(rows) do
             if row.key:lower() == key then
-                if row.choices then
+                if row.color then
+                    if value == "reset" then
+                        local d = ns.defaults[row.key]
+                        Set(row.key, { d[1], d[2], d[3] })
+                        ns.Print(row.label .. ": back to the default.")
+                    else
+                        PickColor(row, Set)
+                    end
+                    return
+                elseif row.choices then
                     for _, choice in ipairs(row.choices) do
                         if tostring(choice[1]):lower() == value then
                             Set(row.key, choice[1])
