@@ -96,6 +96,14 @@ local function AddFlareRow(row, Set)
     end
     Copy.rows[where.key] = { label = row.label, desc = row.tip, section = where.section, choices = labels,
                              tags = { "extension" } }
+    if row.flareDef then
+        -- a row of FlareUI's own making (a kind this file has no plain form for): the addon gives
+        -- FlareUI's row definition, and only its place is filled in here
+        local def = row.flareDef
+        def.key, def.section, def.tab, def.half = where.key, where.section, where.tab, where.half
+        S:Row(def)
+        return
+    end
     if row.color or row.onClick then
         -- a button: it opens the colour picker, or does what the row says
         S:Row{
@@ -132,7 +140,8 @@ end
 
 -- rows: { key = "enabled", label = "...", tip = "...", choices = { { value, label }, ... }, flare = {...} }
 -- (no choices: a checkbox; color = true: a colour, saved as { red, green, blue }; slider = true: the
--- choices on a slider in FlareUI's window; onClick = function: a button, nothing saved). slash: "/name".
+-- choices on a slider in FlareUI's window; onClick = function: a button, nothing saved; flareOnly with
+-- flareDef: a row only FlareUI's window has, its definition given whole). slash: "/name".
 -- onChange(key, value): after a setting changed.
 function ns.RegisterOptions(title, rows, slash, onChange)
     ns.title = title
@@ -154,7 +163,9 @@ function ns.RegisterOptions(title, rows, slash, onChange)
             local variable = addonName .. "_" .. row.key
             local get = function() return ns.db[row.key] end
             local set = function(value) Set(row.key, value) end
-            if row.color or row.onClick then
+            if row.flareOnly then
+                -- (only in FlareUI's window)
+            elseif row.color or row.onClick then
                 -- (a button row; should the game not offer one, the slash command still works)
                 pcall(function()
                     local button = CreateSettingsButtonInitializer(row.label, row.buttonText or "Pick Colour",
@@ -186,7 +197,9 @@ function ns.RegisterOptions(title, rows, slash, onChange)
         ns.Print("options (" .. slash .. " <option> <value>):")
         for _, row in ipairs(rows) do
             local values = "on / off"
-            if row.onClick then
+            if row.flareOnly then
+                values = nil
+            elseif row.onClick then
                 values = "opens its window"
             elseif row.color then
                 values = "opens the colour picker, or: reset"
@@ -195,7 +208,11 @@ function ns.RegisterOptions(title, rows, slash, onChange)
                 for _, choice in ipairs(row.choices) do list[#list + 1] = tostring(choice[1]) end
                 values = table.concat(list, " / ")
             end
-            print(("  %s = %s  (%s: %s)"):format(row.key, ValueText(row, ns.db[row.key]), row.label, values))
+            if values then
+                print(("  %s = %s  (%s: %s)"):format(row.key, ValueText(row, ns.db[row.key]), row.label, values))
+            else
+                print(("  %s: in FlareUI's settings window"):format(row.label))
+            end
         end
         -- (an addon's own commands: ns.slashHelp, handled by ns.OnSlash)
         for _, line in ipairs(ns.slashHelp or {}) do print("  " .. line) end
@@ -213,7 +230,7 @@ function ns.RegisterOptions(title, rows, slash, onChange)
             return
         end
         for _, row in ipairs(rows) do
-            if row.key:lower() == key then
+            if row.key:lower() == key and not row.flareOnly then
                 if row.onClick then
                     row.onClick()
                     return
