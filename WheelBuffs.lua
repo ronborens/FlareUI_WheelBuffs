@@ -225,13 +225,13 @@ local started = false
 ns.OnReady("FlareUI_WheelBuffsDB", DEFAULTS, function()
     ns.RegisterOptions("FlareUI: Cast Missing Buffs on Mouse Wheel", {
         { key = "enabled", label = "Cast on Mouse Wheel",
-          flare = { key = "br.extCastOnWheel", section = "br.alertsSection", tab = "alerts" },
+          flare = { key = "br.extCastOnWheel", section = "br.alertsSection", tab = { "alerts", "when" } },
           tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Only out of combat, unmounted, in your normal form, and when you are not eating, drinking, bandaging or casting something else. Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },
         { key = "selfOnly", label = "Only Buffs on Myself",
-          flare = { key = "br.extWheelSelfOnly", section = "br.alertsSection", tab = "alerts" },
+          flare = { key = "br.extWheelSelfOnly", section = "br.alertsSection", tab = { "alerts", "when" } },
           tip = "The wheel never casts a buff that is missing on someone else in your group, only on you. Switch this off to let a scroll buff your group too." },
         { key = "minMana", label = "Only Above Mana", slider = true,
-          flare = { key = "br.extWheelMinMana", section = "br.alertsSection", tab = "alerts" },
+          flare = { key = "br.extWheelMinMana", section = "br.alertsSection", tab = { "alerts", "when" } },
           tip = "The wheel only casts while your mana is at or above this much, so a scroll never spends mana you are saving or waiting to regain. Off: it casts at any mana.",
           choices = { { 0, "Off" }, { 10, "10%" }, { 20, "20%" }, { 30, "30%" }, { 40, "40%" }, { 50, "50%" },
                       { 60, "60%" }, { 70, "70%" }, { 80, "80%" }, { 90, "90%" } } },

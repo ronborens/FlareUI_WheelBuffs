@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Fixed the options not showing in FlareUI 7.0, which removed the Alerts tab they sat on. They are now under Buff Reminders > When and Where, in the Alerts section.
+
 ## 1.0.3
 
 - New option, Only Above Mana: the wheel only casts while your mana is at or above the amount you choose.

@@ -77,8 +77,25 @@ end
 
 -- A row inside FlareUI's settings window. FlareUI builds the window from a list of rows (its
 -- Settings:Row) and takes every text from a table by row key (its Copy.rows): both are filled in here.
--- row.flare: { key = "ab.extName" (FlareUI's page, then a name of our own), section, tab, half,
--- sectionTitle (for a section of our own) }
+-- row.flare: { key = "ab.extName" (FlareUI's page, then a name of our own), section, tab (a name, or
+-- a list of names: see FlareTab), half, sectionTitle (for a section of our own) }
+-- The tab a row goes on: the first of the wanted ones (a name, or a list in order of preference) that
+-- FlareUI's page still has. FlareUI moves its tabs about between versions, and a row on a tab that is
+-- gone would show nowhere; failing them all, the page's first tab.
+local function FlareTab(S, key, wanted)
+    if wanted == nil then return nil end
+    local module = type(S.modules) == "table" and S.modules[key:match("^([^.]+)")]
+    local tabs = type(module) == "table" and type(module.tabs) == "table" and module.tabs or {}
+    local have = {}
+    for _, tab in ipairs(tabs) do
+        if type(tab) == "table" and tab.key then have[tab.key] = true end
+    end
+    for _, name in ipairs(type(wanted) == "table" and wanted or { wanted }) do
+        if have[name] then return name end
+    end
+    return type(tabs[1]) == "table" and tabs[1].key or nil
+end
+
 local function AddFlareRow(row, Set)
     local F = _G.FlareUI
     local S, Copy = type(F) == "table" and F.Settings, type(F) == "table" and F.Copy
@@ -86,6 +103,7 @@ local function AddFlareRow(row, Set)
         return
     end
     local where = row.flare
+    where.tab = FlareTab(S, where.key, where.tab)
     local values, labels
     if row.choices then
         values, labels = {}, {}

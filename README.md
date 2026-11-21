@@ -37,7 +37,7 @@ Since most players scroll the wheel constantly while moving around, missing buff
 
 ## Options
 
-The options appear inside FlareUI's own settings window, under Buff Reminders > Alerts. You can also type `/flarewheel`, or open the game's Options > AddOns.
+The options appear inside FlareUI's own settings window, under Buff Reminders > When and Where, in the Alerts section. You can also type `/flarewheel`, or open the game's Options > AddOns.
 
 - **Cast on Mouse Wheel:** on or off.
 - **Only Buffs on Myself (on by default):** the wheel never casts on someone else in your group. Switch it off to let a scroll buff your group too.
