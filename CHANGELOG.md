@@ -3,6 +3,7 @@
 ## 1.0.3
 
 - The wheel no longer casts while you are eating or drinking, so it never interrupts your meal.
+- It also waits while you are bandaging, fishing, using your hearthstone, gathering, crafting or casting anything else, and while you are stealthed, feigning death or dead.
 
 ## 1.0.2
 

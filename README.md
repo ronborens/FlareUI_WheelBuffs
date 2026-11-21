@@ -27,6 +27,7 @@ Since most players scroll the wheel constantly while moving around, missing buff
 - **Out of combat only.** In a fight your mouse wheel is left completely alone.
 - **Never while mounted.** A scroll will not dismount you.
 - **Never while eating or drinking.** A scroll will not stand you up and waste your food or water.
+- **Never while you are busy.** It waits while you are bandaging, fishing, using your hearthstone, gathering, crafting or casting anything else, and while you are stealthed or feigning death.
 - **Never in another form.** It will not take you out of Ghost Wolf or a druid form; the buff waits until you are back in your normal form.
 - **Only buffs you by default.** "Only Buffs on Myself" is switched on from the start, so a scroll never casts on another player unless you choose that.
 - **Spells only.** It never uses an item and never runs a macro.
