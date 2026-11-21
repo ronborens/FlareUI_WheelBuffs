@@ -3,6 +3,7 @@
 ## 1.0.4
 
 - Fixed the options not showing in FlareUI 7.0, which removed the Alerts tab they sat on. They are now under Buff Reminders > When and Where, in the Alerts section.
+- The options now stay visible in FlareUI's settings when a FlareUI update moves or removes the tab they sit on.
 
 ## 1.0.3
 
