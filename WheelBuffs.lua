@@ -208,7 +208,7 @@ end
 
 local started = false
 ns.OnReady("FlareUI_WheelBuffsDB", DEFAULTS, function()
-    ns.RegisterOptions("FlareUI: Cast Missing Buffs on Mouse Wheel", {
+    ns.RegisterOptions("Cast Missing Buffs on Mouse Wheel for FlareUI", {
         { key = "enabled", label = "Cast on Mouse Wheel",
           flare = { key = "br.extCastOnWheel", section = "br.alertsSection", tab = { "alerts", "when" } },
           tip = "While one of FlareUI's Buff Reminders shows a missing buff, scrolling the mouse wheel casts it and still zooms the camera. Only out of combat, unmounted, in your normal form, and when you are not eating, drinking, bandaging or casting something else. Spells only: no items or macros. Only wheel keys bound to camera zoom. With nothing missing the wheel is left exactly as it is." },

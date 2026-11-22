@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6
+
+- Renamed to Cast Missing Buffs on Mouse Wheel for FlareUI, to make clear it is an unofficial add-on and not part of FlareUI. Nothing else changes.
+
 ## 1.0.5
 
 - Removed Only Above Mana. This game version hides your current mana from addons, everywhere and at all times, so the setting could never take effect.

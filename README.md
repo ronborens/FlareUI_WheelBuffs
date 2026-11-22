@@ -1,6 +1,8 @@
-# FlareUI: Cast Missing Buffs on Mouse Wheel
+# Cast Missing Buffs on Mouse Wheel for FlareUI
 
-An extension for the FlareUI interface that lets you rebuff without thinking about it: when a buff is missing, simply scrolling your mouse wheel casts it.
+An unofficial add-on for FlareUI that lets you rebuff without thinking about it: when a buff is missing, simply scrolling your mouse wheel casts it.
+
+_Not made by, or affiliated with, FlareUI's author._
 
 ## What it does
 

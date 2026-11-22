@@ -1,10 +1,9 @@
 ## Interface: 16001
-## Title: FlareUI: Cast Missing Buffs on Mouse Wheel
-## Notes: Unofficial FlareUI extension. Scroll the mouse wheel to cast the buff FlareUI's Buff Reminders say is missing.
+## Title: Cast Missing Buffs on Mouse Wheel for FlareUI
+## Notes: Unofficial add-on for FlareUI, not made by its author. Scroll the mouse wheel to cast the buff FlareUI's Buff Reminders say is missing.
 ## Author: ronborens
-## Version: 1.0.5
+## Version: 1.0.6
 ## Dependencies: FlareUI
-## Group: FlareUI
 ## SavedVariables: FlareUI_WheelBuffsDB
 ## Category: User Interface
 ## X-License: MIT
