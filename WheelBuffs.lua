@@ -17,7 +17,7 @@ local _, ns = ...
 local Wheel = { KEYS = { MOUSEWHEELUP = "CAMERAZOOMIN", MOUSEWHEELDOWN = "CAMERAZOOMOUT" } }
 ns.Wheel = Wheel
 
-local DEFAULTS = { enabled = true, selfOnly = true, minMana = 0 }
+local DEFAULTS = { enabled = true, selfOnly = true }
 
 local function Reminders()
     local F = _G.FlareUI
@@ -110,22 +110,9 @@ function Wheel.Occupied()
     return false
 end
 
--- Only Above Mana: your mana, as a share of the whole, is under the setting. A class without mana, or
--- mana the game won't let an addon read, never counts as low.
-local MANA = Enum and Enum.PowerType and Enum.PowerType.Mana or 0
-function Wheel.LowMana()
-    local floor = tonumber(ns.db and ns.db.minMana) or 0
-    if floor <= 0 then return false end
-    local ok, mana, max = pcall(function() return UnitPower("player", MANA), UnitPowerMax("player", MANA) end)
-    if not ok or type(mana) ~= "number" or type(max) ~= "number" then return false end
-    if canaccessvalue and not (canaccessvalue(mana) and canaccessvalue(max)) then return false end
-    if max <= 0 then return false end
-    return mana / max * 100 < floor
-end
-
 local shifter   -- this class changes shape
 function Wheel.Busy()
-    if IsMounted() or Wheel.Occupied() or Wheel.LowMana() or Wheel.Eating() then return true end
+    if IsMounted() or Wheel.Occupied() or Wheel.Eating() then return true end
     if shifter == nil then
         local _, class = UnitClass("player")
         if class then shifter = class == "DRUID" or class == "SHAMAN" end
@@ -183,8 +170,6 @@ Wheel.events:RegisterEvent("PLAYER_DEAD")
 Wheel.events:RegisterEvent("PLAYER_ALIVE")
 Wheel.events:RegisterEvent("PLAYER_UNGHOST")
 Wheel.events:RegisterUnitEvent("UNIT_AURA", "player")
-Wheel.events:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")   -- (Only Above Mana)
-Wheel.events:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 for _, event in ipairs({ "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_INTERRUPTED",
                          "UNIT_SPELLCAST_SUCCEEDED", "UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_STOP" }) do
     pcall(Wheel.events.RegisterUnitEvent, Wheel.events, event, "player")
@@ -230,11 +215,6 @@ ns.OnReady("FlareUI_WheelBuffsDB", DEFAULTS, function()
         { key = "selfOnly", label = "Only Buffs on Myself",
           flare = { key = "br.extWheelSelfOnly", section = "br.alertsSection", tab = { "alerts", "when" } },
           tip = "The wheel never casts a buff that is missing on someone else in your group, only on you. Switch this off to let a scroll buff your group too." },
-        { key = "minMana", label = "Only Above Mana", slider = true,
-          flare = { key = "br.extWheelMinMana", section = "br.alertsSection", tab = { "alerts", "when" } },
-          tip = "The wheel only casts while your mana is at or above this much, so a scroll never spends mana you are saving or waiting to regain. Off: it casts at any mana.",
-          choices = { { 0, "Off" }, { 10, "10%" }, { 20, "20%" }, { 30, "30%" }, { 40, "40%" }, { 50, "50%" },
-                      { 60, "60%" }, { 70, "70%" }, { 80, "80%" }, { 90, "90%" } } },
     }, "/flarewheel", function() if started then Recheck() end end)
 end, function()
     started = true

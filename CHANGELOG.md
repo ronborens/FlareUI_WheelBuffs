@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+
+- Removed Only Above Mana. This game version hides your current mana from addons, everywhere and at all times, so the setting could never take effect.
+
 ## 1.0.4
 
 - Fixed the options not showing in FlareUI 7.0, which removed the Alerts tab they sat on. They are now under Buff Reminders > When and Where, in the Alerts section.

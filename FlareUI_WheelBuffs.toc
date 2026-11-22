@@ -2,7 +2,7 @@
 ## Title: FlareUI: Cast Missing Buffs on Mouse Wheel
 ## Notes: Unofficial FlareUI extension. Scroll the mouse wheel to cast the buff FlareUI's Buff Reminders say is missing.
 ## Author: ronborens
-## Version: 1.0.4
+## Version: 1.0.5
 ## Dependencies: FlareUI
 ## Group: FlareUI
 ## SavedVariables: FlareUI_WheelBuffsDB

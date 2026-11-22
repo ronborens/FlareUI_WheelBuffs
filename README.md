@@ -41,7 +41,6 @@ The options appear inside FlareUI's own settings window, under Buff Reminders > 
 
 - **Cast on Mouse Wheel:** on or off.
 - **Only Buffs on Myself (on by default):** the wheel never casts on someone else in your group. Switch it off to let a scroll buff your group too.
-- **Only Above Mana:** the wheel only casts while your mana is at or above the amount you choose (10% to 90%), so it never spends mana you are saving. Off by default.
 
 ## Good to know
 
